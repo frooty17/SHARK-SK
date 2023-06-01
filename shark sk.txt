@@ -1,4 +1,4 @@
-Y bus exp 
+#Y bus exp 
 
 n=input('Total number of buses n=');
 for i=1:n
@@ -30,7 +30,7 @@ sprintf('Y_bus=')
 
 
 
-psexp 2
+#ps exp 2
 
 type=input('type of line: pres 1 for short line,press 2 for medium line,press 3 
 for long transmission line;');
