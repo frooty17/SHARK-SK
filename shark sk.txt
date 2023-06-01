@@ -1,0 +1,128 @@
+Y bus exp 
+
+n=input('Total number of buses n=');
+for i=1:n
+for k=i:n
+sprintf('z(%d,%d)',i,k)
+z(i,k)=input('');
+y(i,k)=1/z(i,k);
+y(k,i)=y(i,k);
+end
+end
+for i=1:n
+sprintf('y(0,%d)',i)
+ys(i)=input('');
+end
+Y=zeros(n,n);
+for i=1:n
+Y(i,i)=0;
+for k=1:n
+if i~=k
+Y(i,k)=-y(i,k);
+Y(k,i)=Y(i,k);
+Y(i,i)=Y(i,i)+y(i,k);
+end
+end
+Y(i,i)=Y(i,i)+ys(i);
+end
+sprintf('Y_bus=')
+ Y
+
+
+
+psexp 2
+
+type=input('type of line: pres 1 for short line,press 2 for medium line,press 3 
+for long transmission line;');
+r=input('Resistance(ohm/phase/km)=');
+l=input('Inductance(H/phase/km)=');
+c=input('capacitance(F/phase/km)=');
+len=input('line length(km)=');
+f=input('Frequency(HZ)=');
+%ABCD parameter for short transmission line
+if (type==1)
+ Z=r*len+j*2*pi*f*l*len;
+ A=1+j*0;
+ B=Z;
+ C=0;
+ D=A;
+ ABCD=[A B; C D]
+end
+%ABCD parameter for medium transmission line
+if (type==2)
+ Z=r*len+j*2*pi*f*l*len;
+ Y=j*2*pi*f*c*len;
+ %For PI model
+ A=1+Y*Z/2;
+ B=Z;
+ C=Y*(1+Y*Z/4);
+ D=A;
+ sprintf('for PI model')
+ ABCD=[A B; C D]
+ Z=r*len+j*2*pi*f*l*len;
+ Y=j*2*pi*f*c*len;
+ %For T model
+ A=1+Y*Z/2;
+ B=Z*(1+Y*Z/4);
+ C=Y;
+ D=A;
+ sprintf('For T model')
+ ABCD=[A B; C D]
+end
+%ABCD parameter for long transmission line
+if(type==3)
+ Z=r+j*2*pi*f*1;
+ Y=j*2*pi*f*c;
+ gamma=sqrt(Z*Y);
+ Zc=sqrt(Z/Y);
+ A=cosh(gamma*len);
+ B=Zc*sinh(gamma*len);
+ C=(1/Zc)*sinh(gamma*len);
+ D=A;
+ ABCD=[A B; C D]
+end
+VR=input('Receving end voltage(v/ph)=' );
+IR=input('Receving end current(A/ph)=');
+VS=A*VR+B*IR;
+IS=C*VR+D*IR;
+Regulation=(abs(VS/A)-abs(VR))*100/abs(VR)
+PR=abs(VR)*abs(IR)*cos(angle(VR)-angle(IR));
+PS=abs(VS)*abs(IS)*cos(angle(VS)-angle(IS));
+effi=PR*100/PS
+
+
+
+ps2 exp1
+
+%Calculation of Inductance and Capacitance of Transmission Line
+Type=input('Press 1 for equilateral spacing and press 2 for unsymmetrical 
+spacing = ')
+% Calculations for equilateral spacing
+if Type==1
+ D=input('Distance between conductgor of two phases in meters = ')
+ r=input('radius of conductor in meters = ')
+ r1=0.7788*r
+% inductance per phase
+ L=0.2*log(D/r1)
+ sprintf( 'inductance of line is=%f mH/phase/km' ,L)
+%capacitance per phade
+ Cn=0.0555/(log(D/r));
+ sprintf('capacitance of line is=%f uF/phase/km' ,Cn)
+end
+% Calculations for unsymmetrical spacing
+if Type==2 
+ D12=input('Distance between conductor 1 and 2 in meters = ')
+ D23=input('Dustance between conductor 2 and 3 in meters = ')
+ D31=input('Distance between conductor 3 and 1 in meters = ')
+ r=input('radius of conductor in meters = ')
+ r1=0.7788*r;
+%inductance per phase
+ GMD=(D12*D23*D31)^(1/3);
+ L=0.2*(log(GMD/r1));
+ sprintf('inductance of line is=%f mH/phase/km' ,L)
+%capacitance per phase
+ Cn=0.0555/((log(GMD/r)));
+ sprintf('capacitance of line is=%f uF/phase/km' ,Cn)
+end
+ 
+ 
